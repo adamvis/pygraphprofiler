@@ -20,6 +20,9 @@ jobs:
           python -m pip install -r requirements.txt
           python -m pip install setuptools wheel twine
 
+      - name: Set PYTHONPATH
+        run: export PYTHONPATH=$PYTHONPATH:/home/runner/work/pygraphprofiler/pygraphprofiler
+
       - name: Run tests
         env:
           PYTHONPATH: "${{ github.workspace }}"
