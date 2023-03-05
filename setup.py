@@ -4,6 +4,7 @@ from setuptools import setup, find_packages
 # Install graphviz package using apt-get
 subprocess.run(['apt-get', 'update'])
 subprocess.run(['apt-get', 'install', '-y', 'graphviz'])
+subprocess.run(['apt-get', 'install', '-y', 'libgraphviz-dev'])
 
 # Get the long description from the README.md file
 with open("README.md", "r") as fh:
