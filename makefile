@@ -1,6 +1,6 @@
 .PHONY: install test clean
 
-PACKAGE_NAME = profiler
+PACKAGE_NAME = pygraphprofiler
 
 install:
 	python setup.py install
