@@ -12,7 +12,7 @@ with open("README.md", "r") as fh:
 
 setup(
     name='pygraphprofiler',
-    version='0.1.6',
+    version='0.1.7',
     description='A Python package for profiling functions.',
     author='Adam Viscusi',
     author_email='adam.viscusi@gmail.com',
