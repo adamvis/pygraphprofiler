@@ -7,8 +7,8 @@ import matplotlib.dates as mdates
 import time
 import pandas as pd
 
-from utils.graph import _add_graph_edges, _add_graph_nodes
-from utils.plot import _draw_graph_to_file, _set_edge_labels, _set_graph_layout, _set_node_labels, _set_node_sizes
+from .utils.graph import _add_graph_edges, _add_graph_nodes
+from .utils.plot import _draw_graph_to_file, _set_edge_labels, _set_graph_layout, _set_node_labels, _set_node_sizes
 
 
 date_format = mdates.DateFormatter('%m/%d/%Y %H:%M')
