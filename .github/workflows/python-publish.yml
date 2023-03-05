@@ -6,7 +6,7 @@ on:
       - main
 
 jobs:
-  build:
+  test:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -20,24 +20,27 @@ jobs:
           python -m pip install -r requirements.txt
           python -m pip install setuptools wheel twine
 
-      - name: Set PYTHONPATH
-        run: export PYTHONPATH=$PYTHONPATH:/home/runner/work/pygraphprofiler/pygraphprofiler
-
       - name: Run tests
         env:
           PYTHONPATH: "${{ github.workspace }}"
         run: |
           python -m unittest discover -s .
-          
+
+  deploy:
+    needs: test
+    runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
       - name: Build distribution package
         run: |
           python setup.py sdist bdist_wheel
 
       - name: Upload to PyPI
-        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
         env:
           TWINE_USERNAME: __token__
           TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
         run: |
           python -m twine upload --skip-existing dist/*
-
