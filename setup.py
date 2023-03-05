@@ -12,11 +12,12 @@ with open("README.md", "r") as fh:
 
 setup(
     name='pygraphprofiler',
-    version='0.1.3',
+    version='0.1.4',
     description='A Python package for profiling functions.',
     author='Adam Viscusi',
     author_email='adam.viscusi@gmail.com',
-    packages=find_packages(),
+    package_dir={'': 'src'},
+    packages=find_packages(where='src'),
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/adamvis/pygraphprofiler",
