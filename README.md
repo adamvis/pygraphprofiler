@@ -1,3 +1,7 @@
+
+<img src="logo_banner.png" width="100%">
+
+
 # PyGraphProfiler
 
 Unleash the power of PyGraphProfiler - the ultimate Python class for function profiling and execution graph visualization! With PyGraphProfiler, you can effortlessly monitor function calls, create a stunning graph showcasing their execution order, and easily convert the profiling data to a Pandas DataFrame. Say goodbye to the complexity of profiling Python functions, and hello to the ease and efficiency of Profiler!
