@@ -22,10 +22,10 @@ setup(
     long_description_content_type="text/markdown",
     url="https://github.com/adamvis/pygraphprofiler",
     install_requires=[
-        'networkx==3.0',
-        'pandas==1.4.0',
-        'pygraphviz==1.10',
-        'matplotlib==3.5.1'
+        'networkx>=3.0',
+        'pandas>=1.4.0',
+        'pygraphviz>=1.10',
+        'matplotlib>=3.5.1'
     ],
     classifiers=[
         "Programming Language :: Python :: 3",
