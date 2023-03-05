@@ -20,7 +20,7 @@ These dependencies will be automatically installed by pip during the installatio
 
 Here's an example of how to use the Profiler class:
 
-    from profiler import Profiler
+    from pygraphprofiler import Profiler, merge_profiler_instances
 
     profiler = Profiler()
 

@@ -12,7 +12,7 @@ with open("README.md", "r") as fh:
 
 setup(
     name='pygraphprofiler',
-    version='0.1.4',
+    version='0.1.5',
     description='A Python package for profiling functions.',
     author='Adam Viscusi',
     author_email='adam.viscusi@gmail.com',
@@ -22,8 +22,10 @@ setup(
     long_description_content_type="text/markdown",
     url="https://github.com/adamvis/pygraphprofiler",
     install_requires=[
-        'networkx',
-        'pandas'
+        'networkx==3.0',
+        'pandas==1.4.0',
+        'pygraphviz==1.10',
+        'matplotlib==3.5.1'
     ],
     classifiers=[
         "Programming Language :: Python :: 3",
