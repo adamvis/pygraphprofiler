@@ -1,7 +1,9 @@
+import sys
 import unittest
 import time
 from profiler import Profiler, merge_profiler_instances
 
+sys.path.append("..")
 
 class TestProfiler(unittest.TestCase):
 
