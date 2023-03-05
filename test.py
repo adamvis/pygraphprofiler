@@ -1,8 +1,12 @@
+import json
 import os
 import unittest
 import time
-from src.pygraphprofiler import Profiler, merge_profiler_instances, monitor, plot_graph
-from src.pygraphprofiler import profiler
+import networkx as nx
+
+import pandas as pd
+from src.pygraphprofiler import Profiler, merge_profiler_instances, monitor, plot_graph, to_dataframe, to_graph, to_json
+from src.pygraphprofiler import profiler as profiler_lib
 
 
 class TestProfiler(unittest.TestCase):
@@ -82,7 +86,7 @@ class TestProfiler(unittest.TestCase):
 
 class TestMonitor(unittest.TestCase):
 
-    def test_monitor(self):
+    def test_to_dataframe(self):
 
         @monitor
         def test_func():
@@ -90,9 +94,37 @@ class TestMonitor(unittest.TestCase):
 
         test_func()
 
-        self.assertTrue(len(profiler._func_names_list) == 1)
-        self.assertEqual(profiler._func_names_list[0], "test_func")
-        self.assertEqual(profiler._parent_func_list[0], "test_monitor")
+        df = to_dataframe()
+        self.assertIsInstance(df, pd.DataFrame)
+        self.assertGreater(len(df), 0)
+
+    def test_to_json_from_json(self):
+
+        @monitor
+        def test_func():
+            pass
+
+        test_func()
+
+        json_string = to_json()
+        self.assertIsInstance(json_string, str)
+        data = json.loads(json_string)
+        self.assertIn('_func_names_list', data)
+        self.assertIn('_parent_func_list', data)
+        self.assertIn('_start_time_list', data)
+        self.assertIn('_end_time_list', data)
+
+    def test_to_graph(self):
+
+        @monitor
+        def test_func():
+            pass
+
+        test_func()
+        graph = to_graph()
+        self.assertIsInstance(graph, nx.DiGraph)
+        self.assertGreater(len(graph.nodes), 0)
+        self.assertGreater(len(graph.edges), 0)
 
     def test_plot_graph(self):
 
@@ -114,7 +146,7 @@ class TestMonitor(unittest.TestCase):
         plot_graph(filename, weight_node_on='count')
 
         self.assertTrue(os.path.exists(filename))
-        #os.remove(filename)
+        os.remove(filename)
 
 
 if __name__ == '__main__':
