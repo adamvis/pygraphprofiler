@@ -37,7 +37,7 @@ Here's an example of how to use the Profiler class:
 
     profiler.plot_graph("graph.png")
 
-This code creates a Profiler object, defines two functions foo and bar, monitors their execution using the monitor decorator, calls foo and bar, and then plots the execution graph to a file named "graph.png".
+This code creates a Profiler object, defines two functions foo and bar, monitors their execution using the monitor decorator, calls foo and bar, and then plots the execution graph to a file named "graph.png". The size of the dots depends on either 'count', 'total_exec_time', 'average_exec_time' that can be set in the optional parameter 'weight_node_on' inside 'plot_graph'. Default is 'count'.
 
 The Profiler class also provides methods to convert the profiling data to a Pandas DataFrame and to serialize it to JSON:
 

@@ -89,12 +89,12 @@ class Profiler:
         })
         return task_df
 
-    def plot_graph(self, filename, weight_node_on=None):
+    def plot_graph(self, filename, weight_node_on:str='count'):
         """The plot_graph function generates a visualization of the function call graph created by the profiler and saves it to a file.
 
         Args:
         filename (str): The name of the file to save the plot to.
-        weight_node_on (str, optional): The column name of the dataframe that contains the weights of nodes, which are used to determine the size of the nodes in the plot. If not provided, all nodes will have the same size.
+        weight_node_on (str, optional): The column name of the dataframe that contains the weights of nodes, which are used to determine the size of the nodes in the plot (available options: 'count', 'total_exec_time', 'average_exec_time'). If not provided, defaults to 'count'.
 
         Returns:
         None. The plot is saved to the file specified by filename.
