@@ -1,6 +1,9 @@
+import os
 import unittest
 import time
-from src.pygraphprofiler import Profiler, merge_profiler_instances
+from src.pygraphprofiler import Profiler, merge_profiler_instances, monitor, plot_graph
+from src.pygraphprofiler import profiler
+
 
 class TestProfiler(unittest.TestCase):
 
@@ -75,6 +78,43 @@ class TestProfiler(unittest.TestCase):
         self.assertIn('parent_task', df.columns)
         self.assertIn('start_time', df.columns)
         self.assertIn('end_time', df.columns)
+
+
+class TestMonitor(unittest.TestCase):
+
+    def test_monitor(self):
+
+        @monitor
+        def test_func():
+            pass
+
+        test_func()
+
+        self.assertTrue(len(profiler._func_names_list) == 1)
+        self.assertEqual(profiler._func_names_list[0], "test_func")
+        self.assertEqual(profiler._parent_func_list[0], "test_monitor")
+
+    def test_plot_graph(self):
+
+        @monitor
+        def func1():
+            pass
+
+        @monitor
+        def func2():
+            func1()
+
+        @monitor
+        def func3():
+            func1()
+            func2()
+
+        func3()
+        filename = "test_plot_graph.png"
+        plot_graph(filename, weight_node_on='count')
+
+        self.assertTrue(os.path.exists(filename))
+        #os.remove(filename)
 
 
 if __name__ == '__main__':

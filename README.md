@@ -65,6 +65,27 @@ Or merge two instances of Profiler directly:
 
 This code creates two instances of Profiler, profiles two functions foo and bar separately using each profiler, converts the profiling data to JSON, merges the two profilers, converts the merged profiling data to a Pandas DataFrame and JSON.
 
+In addition to the class-based profiling provided by the Profiler class, PyGraphProfiler also includes a module-level profiling function monitor, which can be used to profile functions without creating a Profiler object. Here's an example:
+
+    from pygraphprofiler import monitor, plot_graph
+
+    @monitor
+    def foo():
+        pass
+
+    @monitor
+    def bar():
+        pass
+
+    foo()
+    bar()
+
+    plot_graph("module_dependencies.png")
+
+
+In this cases profiling logs will be shared across the module.
+
+
 ## Future Changes
 
 - Improve existing visualizations and add new ones: The current version of the Profiler class provides basic visualization options. Future updates may include more advanced visualization techniques to help users better understand the profiling data. This may include interactive visualizations, 3D plots, or other custom visualization techniques.
