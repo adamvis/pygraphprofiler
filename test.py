@@ -1,9 +1,6 @@
-import sys
 import unittest
 import time
-from profiler import Profiler, merge_profiler_instances
-
-sys.path.append("..")
+from pygraphprofiler import Profiler, merge_profiler_instances
 
 class TestProfiler(unittest.TestCase):
 
