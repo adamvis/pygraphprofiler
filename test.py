@@ -1,6 +1,6 @@
 import unittest
 import time
-from src import Profiler, merge_profiler_instances
+from src.pygraphprofiler import Profiler, merge_profiler_instances
 
 class TestProfiler(unittest.TestCase):
 
