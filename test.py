@@ -20,10 +20,10 @@ class TestProfiler(unittest.TestCase):
 
         test_func()
 
-        self.assertEqual(len(profiler._func_names_list), 1)
-        self.assertEqual(len(profiler._parent_func_list), 1)
-        self.assertEqual(len(profiler._start_time_list), 1)
-        self.assertEqual(len(profiler._end_time_list), 1)
+        self.assertEqual(len(profiler.profiling_data["task"]), 1)
+        self.assertEqual(len(profiler.profiling_data["parent_task"]), 1)
+        self.assertEqual(len(profiler.profiling_data["start_time"]), 1)
+        self.assertEqual(len(profiler.profiling_data["end_time"]), 1)
 
     def test_merge_profiler_instances(self):
         profiler1 = Profiler()
@@ -44,10 +44,10 @@ class TestProfiler(unittest.TestCase):
 
         merged_profiler = merge_profiler_instances(profiler1, profiler2)
 
-        self.assertEqual(len(merged_profiler._func_names_list), 2)
-        self.assertEqual(len(merged_profiler._parent_func_list), 2)
-        self.assertEqual(len(merged_profiler._start_time_list), 2)
-        self.assertEqual(len(merged_profiler._end_time_list), 2)
+        self.assertEqual(len(merged_profiler.profiling_data["task"]), 2)
+        self.assertEqual(len(merged_profiler.profiling_data["parent_task"]), 2)
+        self.assertEqual(len(merged_profiler.profiling_data["start_time"]), 2)
+        self.assertEqual(len(merged_profiler.profiling_data["end_time"]), 2)
 
     def test_to_json_from_json(self):
         profiler = Profiler()
@@ -61,10 +61,10 @@ class TestProfiler(unittest.TestCase):
         json_str = profiler.to_json()
         new_profiler = Profiler.from_json(json_str)
 
-        self.assertEqual(len(new_profiler._func_names_list), 1)
-        self.assertEqual(len(new_profiler._parent_func_list), 1)
-        self.assertEqual(len(new_profiler._start_time_list), 1)
-        self.assertEqual(len(new_profiler._end_time_list), 1)
+        self.assertEqual(len(new_profiler.profiling_data["task"]), 1)
+        self.assertEqual(len(new_profiler.profiling_data["parent_task"]), 1)
+        self.assertEqual(len(new_profiler.profiling_data["start_time"]), 1)
+        self.assertEqual(len(new_profiler.profiling_data["end_time"]), 1)
 
     def test_to_dataframe(self):
         profiler = Profiler()
@@ -109,10 +109,10 @@ class TestMonitor(unittest.TestCase):
         json_string = to_json()
         self.assertIsInstance(json_string, str)
         data = json.loads(json_string)
-        self.assertIn('_func_names_list', data)
-        self.assertIn('_parent_func_list', data)
-        self.assertIn('_start_time_list', data)
-        self.assertIn('_end_time_list', data)
+        self.assertIn('task', data)
+        self.assertIn('parent_task', data)
+        self.assertIn('start_time', data)
+        self.assertIn('end_time', data)
 
     def test_to_graph(self):
 

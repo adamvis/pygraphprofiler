@@ -12,25 +12,66 @@ from .utils.plot import _draw_graph_to_file, _set_edge_labels, _set_graph_layout
 
 class Profiler:
 
+    @classmethod
+    def _to_graph(cls, data):
+        task_df = cls._to_dataframe(data)
+        graph = nx.DiGraph()
+        graph = _add_graph_nodes(task_df, graph)
+        graph = _add_graph_edges(task_df, graph)
+        return graph
+
+    @classmethod
+    def _to_dataframe(cls, data):
+        return pd.DataFrame(data)
+
+    @classmethod
+    def _plot_graph(cls, data, filename, weight_node_on):
+        graph = cls._to_graph(data)
+        pos = _set_graph_layout(graph)
+        node_labels = _set_node_labels(weight_node_on, graph)
+        edge_labels = _set_edge_labels(graph)
+        node_sizes = _set_node_sizes(weight_node_on, graph)
+        _draw_graph_to_file(filename, graph, pos,
+                            node_labels, edge_labels, node_sizes)
+
+    @classmethod
+    def _to_json(cls, data):
+        return json.dumps(data)
+
+    @classmethod
+    def from_json(cls, json_str):
+        """
+        Returns a new instance of the Profiler class with the data from the given JSON string.
+
+        :param json_str: A JSON string containing the profiler data.
+        :type json_str: str
+        :return: A new instance of the Profiler class.
+        :rtype: Profiler
+        """
+        data = json.loads(json_str)
+        profiler = cls()
+        profiler.profiling_data = {}
+        profiler.profiling_data["task"] = data['task']
+        profiler.profiling_data["parent_task"] = data['parent_task']
+        profiler.profiling_data["start_time"] = data['start_time']
+        profiler.profiling_data["end_time"] = data['end_time']
+        return profiler
+
     def __init__(self, name='__main__'):
         """The __init__ method is the constructor of the Profiler class, initializing the instance variables of a new Profiler object.
 
         Args:
         None
 
-        Attributes:
-        _func_names_list (list): A list of function names monitored by the profiler.
-        _parent_func_list (list): A list of parent function names of each monitored function.
-        _start_time_list (list): A list of start times of each monitored function.
-        _end_time_list (list): A list of end times of each monitored function.
-
         Returns:
         Profiler instance
         """
-        self._func_names_list = []
-        self._parent_func_list = []
-        self._start_time_list = []
-        self._end_time_list = []
+        self.profiling_data = {
+            "task" : [],
+            "parent_task" : [],
+            "start_time" : [],
+            "end_time" : [],
+        }
 
     def monitor(self, func):
         """The monitor function is a decorator that can be used to monitor a Python function and record its execution time, along with the function name and the parent function name. The decorated function is returned by the wrapper function wrapper, which records the start time of the function, runs the original function, records the end time of the function, and adds the relevant data to the Profiler instance's _func_names_list, _parent_func_list, _start_time_list, and _end_time_list.
@@ -46,10 +87,10 @@ class Profiler:
             start_time = time.time()
             result = func(*args, **kwargs)
             end_time = time.time()
-            self._func_names_list.append(func.__name__)
-            self._parent_func_list.append(inspect.stack()[1].function)
-            self._start_time_list.append(start_time)
-            self._end_time_list.append(end_time)
+            self.profiling_data["task"].append(func.__name__)
+            self.profiling_data["parent_task"].append(inspect.stack()[1].function)
+            self.profiling_data["start_time"].append(start_time)
+            self.profiling_data["end_time"].append(end_time)
             return result
         return wrapper
 
@@ -62,11 +103,7 @@ class Profiler:
         Returns:
         graph (networkx.DiGraph): A directed graph representing the execution order of t.
         """
-        task_df = self.to_dataframe()
-        graph = nx.DiGraph()
-        graph = _add_graph_nodes(task_df, graph)
-        graph = _add_graph_edges(task_df, graph)
-        return graph
+        return self._to_graph(self.profiling_data)
 
     def to_dataframe(self):
         """The to_dataframe method creates a pandas DataFrame object from the monitored function data stored in the Profiler object.
@@ -77,13 +114,7 @@ class Profiler:
         Returns:
         task_df (pandas DataFrame): A DataFrame object containing the monitored function data. Each row of the DataFrame represents a single function call and contains columns for the function name, its parent function name, the start time of the function call, and the end time of the function call.
         """
-        task_df = pd.DataFrame({
-            'task': self._func_names_list,
-            'parent_task': self._parent_func_list,
-            'start_time': self._start_time_list,
-            'end_time': self._end_time_list
-        })
-        return task_df
+        return self._to_dataframe(self.profiling_data)
 
     def plot_graph(self, filename, weight_node_on: str = 'count'):
         """The plot_graph function generates a visualization of the function call graph created by the profiler and saves it to a file.
@@ -95,13 +126,7 @@ class Profiler:
         Returns:
         None. The plot is saved to the file specified by filename.
         """
-        graph = self.to_graph()
-        pos = _set_graph_layout(graph)
-        node_labels = _set_node_labels(weight_node_on, graph)
-        edge_labels = _set_edge_labels(graph)
-        node_sizes = _set_node_sizes(weight_node_on, graph)
-        _draw_graph_to_file(filename, graph, pos,
-                            node_labels, edge_labels, node_sizes)
+        self._plot_graph(self.profiling_data, filename=filename, weight_node_on=weight_node_on)
 
     def to_json(self):
         """
@@ -113,31 +138,14 @@ class Profiler:
         Returns:
             str: A JSON-encoded string representing the contents of the TaskMonitor object.
         """
-        data = {
-            '_func_names_list': self._func_names_list,
-            '_parent_func_list': self._parent_func_list,
-            '_start_time_list': self._start_time_list,
-            '_end_time_list': self._end_time_list,
-        }
-        return json.dumps(data)
+        return self._to_json(self.profiling_data)
 
-    @classmethod
-    def from_json(cls, json_str):
-        """
-        Returns a new instance of the Profiler class with the data from the given JSON string.
 
-        :param json_str: A JSON string containing the profiler data.
-        :type json_str: str
-        :return: A new instance of the Profiler class.
-        :rtype: Profiler
-        """
-        data = json.loads(json_str)
-        profiler = cls()
-        profiler._func_names_list = data['_func_names_list']
-        profiler._parent_func_list = data['_parent_func_list']
-        profiler._start_time_list = data['_start_time_list']
-        profiler._end_time_list = data['_end_time_list']
-        return profiler
+
+
+
+
+
 
 
 def merge_profiler_instances(*profilers):
@@ -163,9 +171,9 @@ def merge_profiler_instances(*profilers):
     """
     merged_profiler = Profiler()
     for profiler in profilers:
-        merged_profiler._func_names_list += profiler._func_names_list
-        merged_profiler._parent_func_list += profiler._parent_func_list
-        merged_profiler._start_time_list += profiler._start_time_list
-        merged_profiler._end_time_list += profiler._end_time_list
+        merged_profiler.profiling_data["task"] += profiler.profiling_data["task"]
+        merged_profiler.profiling_data["parent_task"] += profiler.profiling_data["parent_task"]
+        merged_profiler.profiling_data["start_time"] += profiler.profiling_data["start_time"]
+        merged_profiler.profiling_data["end_time"] += profiler.profiling_data["end_time"]
     return merged_profiler
 
