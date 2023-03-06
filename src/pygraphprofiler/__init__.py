@@ -2,22 +2,21 @@ import json
 import time
 import functools
 import inspect
-import networkx as nx
 import time
-import pandas as pd
 
-from .profiler import * 
+from .profiler import Profiler, merge_profiler_instances
 from . import utils
 from .utils.graph import _add_graph_edges, _add_graph_nodes
 from .utils.plot import _draw_graph_to_file, _set_edge_labels, _set_graph_layout, _set_node_labels, _set_node_sizes
 
 
 # initialize global, in-memory variables
-_func_names_list = []
-_parent_func_list = []
-_start_time_list = []
-_end_time_list = []
-
+profiling_data = {
+    "task" : [],
+    "parent_task" : [],
+    "start_time" : [],
+    "end_time" : [],
+}
 
 def monitor(func):
     """The monitor function is a decorator that can be used to monitor a Python function and record its execution time, along with the function name and the parent function name. The decorated function is returned by the wrapper function wrapper, which records the start time of the function, runs the original function, records the end time of the function, and adds the relevant data to the global, in-memory variables _func_names_list, _parent_func_list, _start_time_list, and _end_time_list.
@@ -33,10 +32,10 @@ def monitor(func):
         start_time = time.time()
         result = func(*args, **kwargs)
         end_time = time.time()
-        _func_names_list.append(func.__name__)
-        _parent_func_list.append(inspect.stack()[1].function)
-        _start_time_list.append(start_time)
-        _end_time_list.append(end_time)
+        profiling_data["task"].append(func.__name__)
+        profiling_data["parent_task"].append(inspect.stack()[1].function)
+        profiling_data["start_time"].append(start_time)
+        profiling_data["end_time"].append(end_time)
         return result
     return wrapper
 
@@ -51,31 +50,14 @@ def plot_graph(filename, weight_node_on: str = 'count'):
     Returns:
     None. The plot is saved to the file specified by filename.
     """
-    graph = to_graph()
-    pos = _set_graph_layout(graph)
-    node_labels = _set_node_labels(weight_node_on, graph)
-    edge_labels = _set_edge_labels(graph)
-    node_sizes = _set_node_sizes(weight_node_on, graph)
-    _draw_graph_to_file(filename, graph, pos,
-                        node_labels, edge_labels, node_sizes)
+    return Profiler._plot_graph(profiling_data, filename=filename, weight_node_on=weight_node_on)
 
 def to_graph():
-    task_df = to_dataframe()
-    if len(task_df) < 0:
-        raise ValueError("No execution data logged yet!")
-    graph = nx.DiGraph()
-    graph = _add_graph_nodes(task_df, graph)
-    graph = _add_graph_edges(task_df, graph)
-    return graph
+    return Profiler._to_graph(profiling_data)
 
 def to_dataframe():
-    return pd.DataFrame({
-        'task': _func_names_list,
-        'parent_task': _parent_func_list,
-        'start_time': _start_time_list,
-        'end_time': _end_time_list
-    })
-
+    return Profiler._to_dataframe(profiling_data)
+    
 def to_json(name=__name__):
     """
     Convert the information to a JSON string.
@@ -86,11 +68,5 @@ def to_json(name=__name__):
     Returns:
         str: A JSON-encoded string representing the contents of the object.
     """
-    data = {
-        'name':name,
-        '_func_names_list': _func_names_list,
-        '_parent_func_list': _parent_func_list,
-        '_start_time_list': _start_time_list,
-        '_end_time_list': _end_time_list,
-    }
-    return json.dumps(data)
+    return Profiler._to_json(profiling_data)
+    
