@@ -2,9 +2,7 @@ import json
 import time
 import functools
 import inspect
-import networkx as nx
 import time
-import pandas as pd
 
 from .profiler import Profiler, merge_profiler_instances
 from . import utils

@@ -1,16 +1,26 @@
 import networkx as nx
 import matplotlib as mpl
 import matplotlib.pyplot as plt
+from .scc import assign_scc
 
 
-def _draw_graph_to_file(filename: str, graph: nx.Graph, pos: nx.nx_agraph.graphviz_layout, node_labels: dict, edge_labels: dict, node_sizes: list):
-    nx.draw_networkx(graph, pos, labels=node_labels,
-                    with_labels=True, font_size=10, node_size=node_sizes)
-    nx.draw_networkx_edge_labels(
-        graph, pos, edge_labels=edge_labels, font_size=10, label_pos=0.5)
-
+def _draw_graph_to_file(filename: str, graph: nx.Graph, pos: nx.nx_agraph.graphviz_layout, node_labels: dict, edge_labels: dict, weight_node_on: str = None, color_nodes: bool = False):
+    node_sizes = _set_node_sizes(weight_node_on, graph)
+    edge_labels = _set_edge_labels(graph)
+    node_labels = _set_node_labels(weight_node_on, graph)
+    
+    if color_nodes:
+        scc_colors = assign_scc(graph)
+        node_colors = [node['color'] for node in graph.nodes.values()]
+    else:
+        node_colors = 'lightblue'
+    
+    nx.draw_networkx(graph, pos, labels=node_labels, with_labels=True, font_size=10, node_size=node_sizes, node_color=node_colors)
+    nx.draw_networkx_edge_labels(graph, pos, edge_labels=edge_labels, font_size=10, label_pos=0.5)
+    
     plt.savefig(filename, format='png', dpi=300, bbox_inches='tight')
     plt.close()
+
 
 
 def _set_node_sizes(weight_node_on: str, graph: nx.Graph):

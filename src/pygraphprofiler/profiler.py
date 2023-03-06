@@ -25,14 +25,15 @@ class Profiler:
         return pd.DataFrame(data)
 
     @classmethod
-    def _plot_graph(cls, data, filename, weight_node_on):
+    def _plot_graph(cls, data, filename, weight_node_on, color_nodes):
         graph = cls._to_graph(data)
         pos = _set_graph_layout(graph)
         node_labels = _set_node_labels(weight_node_on, graph)
         edge_labels = _set_edge_labels(graph)
         node_sizes = _set_node_sizes(weight_node_on, graph)
         _draw_graph_to_file(filename, graph, pos,
-                            node_labels, edge_labels, node_sizes)
+                            node_labels, edge_labels, node_sizes,
+                            color_nodes)
 
     @classmethod
     def _to_json(cls, data):
@@ -116,7 +117,7 @@ class Profiler:
         """
         return self._to_dataframe(self.profiling_data)
 
-    def plot_graph(self, filename, weight_node_on: str = 'count'):
+    def plot_graph(self, filename, weight_node_on: str = 'count', color_nodes:bool=False):
         """The plot_graph function generates a visualization of the function call graph created by the profiler and saves it to a file.
 
         Args:
@@ -126,7 +127,7 @@ class Profiler:
         Returns:
         None. The plot is saved to the file specified by filename.
         """
-        self._plot_graph(self.profiling_data, filename=filename, weight_node_on=weight_node_on)
+        self._plot_graph(self.profiling_data, filename=filename, weight_node_on=weight_node_on, color_nodes=color_nodes)
 
     def to_json(self):
         """
