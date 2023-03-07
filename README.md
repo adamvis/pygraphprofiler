@@ -1,5 +1,5 @@
 
-<img src="logo_banner.png" width="100%">
+<img src="assets/logo_banner.png" width="100%">
 
 
 # PyGraphProfiler

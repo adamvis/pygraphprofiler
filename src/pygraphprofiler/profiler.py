@@ -58,6 +58,18 @@ class Profiler:
         profiler.profiling_data["end_time"] = data['end_time']
         return profiler
 
+    @classmethod
+    def _monitor(cls, profiling_data, func, *args, **kwargs):
+        start_time = time.time()
+        result = func(*args, **kwargs)
+        end_time = time.time()
+        profiling_data["task"].append(func.__name__)
+        profiling_data["parent_task"].append(inspect.stack()[2].function)
+        profiling_data["start_time"].append(start_time)
+        profiling_data["end_time"].append(end_time)
+        return result, profiling_data
+
+
     def __init__(self, name='__main__'):
         """The __init__ method is the constructor of the Profiler class, initializing the instance variables of a new Profiler object.
 
@@ -85,13 +97,7 @@ class Profiler:
         """
         @functools.wraps(func)
         def wrapper(*args, **kwargs):
-            start_time = time.time()
-            result = func(*args, **kwargs)
-            end_time = time.time()
-            self.profiling_data["task"].append(func.__name__)
-            self.profiling_data["parent_task"].append(inspect.stack()[1].function)
-            self.profiling_data["start_time"].append(start_time)
-            self.profiling_data["end_time"].append(end_time)
+            result, self.profiling_data = self._monitor(self.profiling_data, func)
             return result
         return wrapper
 
@@ -123,6 +129,7 @@ class Profiler:
         Args:
         filename (str): The name of the file to save the plot to.
         weight_node_on (str, optional): The column name of the dataframe that contains the weights of nodes, which are used to determine the size of the nodes in the plot (available options: 'count', 'total_exec_time', 'average_exec_time'). If not provided, defaults to 'count'.
+        color_nodes (bool, optional): Wheter to apply affine colors for strongly connected groups using Kosaraju's algorithm. If not provided, defaults to 'False'.
 
         Returns:
         None. The plot is saved to the file specified by filename.
