@@ -4,16 +4,13 @@ import matplotlib.pyplot as plt
 from .scc import assign_scc
 
 
-def _draw_graph_to_file(filename: str, graph: nx.Graph, pos: nx.nx_agraph.graphviz_layout, node_labels: dict, edge_labels: dict, weight_node_on: str = None, color_nodes: bool = False):
-    node_sizes = _set_node_sizes(weight_node_on, graph)
-    edge_labels = _set_edge_labels(graph)
-    node_labels = _set_node_labels(weight_node_on, graph)
+def _draw_graph_to_file(filename: str, graph: nx.Graph, pos: nx.nx_agraph.graphviz_layout, node_labels: dict, edge_labels: dict, node_sizes: dict,  color_nodes: bool = False):
     
     if color_nodes:
-        scc_colors = assign_scc(graph)
+        graph = assign_scc(graph)
         node_colors = [node['color'] for node in graph.nodes.values()]
     else:
-        node_colors = 'lightblue'
+        node_colors = ['lightblue' for node in graph.nodes.values()]
     
     nx.draw_networkx(graph, pos, labels=node_labels, with_labels=True, font_size=10, node_size=node_sizes, node_color=node_colors)
     nx.draw_networkx_edge_labels(graph, pos, edge_labels=edge_labels, font_size=10, label_pos=0.5)
@@ -26,8 +23,8 @@ def _draw_graph_to_file(filename: str, graph: nx.Graph, pos: nx.nx_agraph.graphv
 def _set_node_sizes(weight_node_on: str, graph: nx.Graph):
     node_sizes = None
     if weight_node_on:
-        values = [graph.nodes[node].get(weight_node_on, 1)
-                for node in graph.nodes]
+        values = [node.get(weight_node_on, 1)
+                for node in graph.nodes.values()]
         norm = mpl.colors.Normalize(vmin=min(values), vmax=max(values))
         cmap = mpl.cm.ScalarMappable(norm=norm, cmap=mpl.cm.Blues_r)
         node_sizes = [1000 * cmap.to_rgba(val)[0] for val in values]

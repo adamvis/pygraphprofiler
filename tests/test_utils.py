@@ -16,6 +16,7 @@ class TestUtils(unittest.TestCase):
             'start_time': [0, 1, 3, 5, 6],
             'end_time': [2, 4, 6, 7, 9]
         }
+        self.weight_node_on = 'total_exec_time'
         
         self.graph = Profiler._to_graph(profiling_data)
         self.task_df = pd.DataFrame(profiling_data)
@@ -34,7 +35,8 @@ class TestUtils(unittest.TestCase):
         pos = nx.spring_layout(self.graph)
         node_labels = {'A': 'Node A', 'B': 'Node B', 'C': 'Node C', 'D': 'Node D', 'E': 'Node E'}
         edge_labels = {('A', 'B'): '1', ('B', 'C'): '2', ('C', 'A'): '3', ('D', 'E'): '4'}
-        _draw_graph_to_file('test.png', self.graph, pos, node_labels, edge_labels, 'total_exec_time', True)
+        node_sizes = [3, 9, 9, 3, 10]
+        _draw_graph_to_file('test.png', self.graph, pos, node_labels, edge_labels, node_sizes, True)
         os.remove('test.png')
 
     def test_add_graph_edges(self):

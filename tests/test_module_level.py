@@ -41,7 +41,16 @@ class TestModuleLevel(unittest.TestCase):
 
         @monitor
         def test_func():
+            test_func_sub_a()
+            test_func_sub_b()
+        
+        @monitor
+        def test_func_sub_a():
             pass
+        
+        @monitor
+        def test_func_sub_b():
+            test_func_sub_a()
 
         test_func()
         graph = to_graph()
